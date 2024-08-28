@@ -16,6 +16,7 @@ let remoteStream
 let isRoomCreator
 let rtcPeerConnection
 let roomId
+let isJoining = false;
 
 const iceServers = {
     iceServers : [
@@ -28,21 +29,24 @@ const iceServers = {
 }
 
 connectButton.addEventListener('click', () => {
-    joinRoom(roomInput.value)
+    if (!isJoining) {
+        isJoining = true;
+        joinRoom(roomInput.value);
+    }
 })
 
 socket.on('room_created', async () => {
-    console.log('Socket event callback: room_created')
-
-    await setLocalStream(mediaConstraints)
-    isRoomCreator = true 
+    console.log('Socket event callback: room_created');
+    await setLocalStream(mediaConstraints);
+    isJoining = false; // 방이 성공적으로 생성되면 플래그 초기화
+    isRoomCreator = true;
 })
 
 socket.on('room_joined', async () => {
-    console.log('Socket event callback: room_joined')
-
-    await setLocalStream(mediaConstraints)
-    socket.emit('start_call', roomId)
+    console.log('Socket event callback: room_joined');
+    await setLocalStream(mediaConstraints);
+    socket.emit('start_call', roomId);
+    isJoining = false; // 방에 성공적으로 조인되면 플래그 초기화
 })
 
 socket.on('full_room', () => {
@@ -52,12 +56,13 @@ socket.on('full_room', () => {
 })
 
 function joinRoom(room) {
-    if(room === '') {
-        alert('Please type a room ID')
+    console.log('joinRoom function called with room:', room); // 추가
+    if (room === '') {
+        alert('Please type a room ID');
     } else {
-        roomId = room
-        socket.emit('join', room)
-        showVideoConference()
+        roomId = room;
+        socket.emit('join', room);
+        showVideoConference();
     }
 }
 
