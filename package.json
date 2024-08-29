@@ -1,14 +1,16 @@
 {
   "name": "webrtc_prac",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "electron": "^32.0.1",
     "express": "^4.19.2",
     "http": "^0.0.1-security",
     "ngrok": "^5.0.0-beta.2",
