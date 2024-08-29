@@ -3,56 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC</title>
-    
-    <style type="text/css">
+    <title>WebRTC Video Conference</title>
+    <style>
         body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             margin: 0;
-            font-size: 20px;
-        }
-        .centered {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .video-position {
-            position: absolute;
-            top: 35%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
         #video-chat-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             width: 100%;
-            background-color: black;
+            height: 80%;
+        }
+        video {
+            margin: 10px;
+            border: 1px solid #000;
         }
         #local-video {
-            position: absolute;
-            height: 30%;
-            width: 30%;
-            bottom: 0px;
-            left: 0px;
+            width: 25%;
+            height: 25%;
         }
-        #remote-video {
-            height: 100%;
-            width: 100%;
+        .remoteVideo {
+            width: 50%;
+            height: 50%;
         }
     </style>
 </head>
 <body>
-    <div id="room-selection-container" class="centered">
-        <h1>WebRTC video conference</h1>
-        <label for="">Enter the number of the room you want to connect</label>
-        <input type="text" id="room-input" />
-        <button id="connect-button">CONNECT</button>
+    <div id="room-selection-container">
+        <h2>Join a Room</h2>
+        <input type="text" id="room-input" placeholder="Enter room ID">
+        <button id="connect-button">Connect</button>
     </div>
-
-    <div id="video-chat-container" class="video-position" style="display: none;">
-        <video id="local-video" autoplay="autoplay"></video>
-        <video id="remote-video" autoplay="autoplay"></video>
+    <div id="video-chat-container" style="display:none;">
+        <video id="local-video" autoplay muted></video>
+        <div class="remoteVideo" id="remote-video"></div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="./client.js"></script>
+    <script src="client.js"></script>
 </body>
 </html>

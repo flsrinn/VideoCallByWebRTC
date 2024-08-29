@@ -1,53 +1,49 @@
-const express = require('express')
-const app = express()
-const server = require('http').createServer(app)
-const io = require('socket.io') (server)
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
-app.use('/', express.static('public'))
+app.use('/', express.static('public'));
 
 io.on('connection', (socket) => {
-	socket.on('join', (roomId) => {
-        const roomClients = io.sockets.adapter.rooms.get(roomId) || new Set();
-        const numberOfClients = roomClients.size;
+    socket.on('join', (roomId) => {
+        const clients = io.sockets.adapter.rooms.get(roomId) || new Set();
 
-        console.log(`Number of clients in room ${roomId}: ${numberOfClients}`); // 추가
-
-        if (numberOfClients === 0) {
-            console.log(`Creating room ${roomId} and emitting room_created socket event`);
-            socket.join(roomId);
-            socket.emit('room_created', roomId);
-        } else if (numberOfClients === 1) {
-            console.log(`Joining room ${roomId} and emitting room_joined socket event`);
-            socket.join(roomId);
-            socket.emit('room_joined', roomId);
-        } else {
-            console.log(`Can't join room ${roomId}, emitting full_room socket event`);
-            socket.emit('full_room', roomId);
+        if (clients.size >= 4) {  // 최대 클라이언트 수를 설정 
+            socket.emit('full_room');
+            return;
         }
+
+        socket.join(roomId); // 클라이언트 입장 
+        console.log(`Client ${socket.id} joined room ${roomId}`);
+
+        socket.emit('existing_clients', Array.from(clients)); // 이미 존재하는 클라이언트인지 확인 
+        socket.to(roomId).emit('new_client', socket.id); // 
     });
 
-	socket.on('start_call', (roomId) => {
-		console.log(`Broadcasting start_call event to peers in room ${roomId}`)
-		socket.broadcast.to(roomId).emit('start_call')
-	})
-	socket.on('webrtc_offer', (event) => {
-		console.log(`Broadcasting webrtc_offer event to peers in room ${event.roomId}`)
-		socket.broadcast.to(event.roomId).emit('webrtc_offer', event.sdp)
-	})
-	socket.on('webrtc_answer', (event) => {
-		console.log(`Broadcasting webrtc_answer event to peers in room ${event.roomId}`)
-		socket.broadcast.to(event.roomId).emit('webrtc_answer', event.sdp)
-	})
-	socket.on('webrtc_ice_candidate', (event) => {
-		console.log(`Broadcasting webrtc_ice_candidate event to peers in room ${event.roomId}`)
+    socket.on('webrtc_offer', (data) => {
+        socket.to(data.targetId).emit('webrtc_offer', {
+            sdp: data.sdp,
+            senderId: socket.id
+        });
+    });
 
-		socket.broadcast.to(event.roomId).emit('webrtc_ice_candidate', event)
-	})
-})
+    socket.on('webrtc_answer', (data) => {
+        socket.to(data.targetId).emit('webrtc_answer', {
+            sdp: data.sdp,
+            senderId: socket.id
+        });
+    });
 
-// Start Server
-const port = process.env.PORT || 3000
-const host = '0.0.0.0'
-server.listen(port, host, () => {
-	console.log(`Express server listening on port ${port}`)
-})
+    socket.on('webrtc_ice_candidate', (data) => {
+        socket.to(data.targetId).emit('webrtc_ice_candidate', {
+            candidate: data.candidate,
+            senderId: socket.id
+        });
+    });
+});
+
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+});
