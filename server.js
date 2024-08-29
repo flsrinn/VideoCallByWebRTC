@@ -43,6 +43,13 @@ io.on('connection', (socket) => {
             senderId: socket.id
         });
     });
+
+    // 사용자가 나갔을 때 처리
+    socket.on('disconnect', () => {
+        console.log(`Client ${socket.id} disconnected`);
+        // 해당 사용자가 속한 방의 다른 사용자들에게 알림
+        socket.broadcast.emit('client_disconnected', socket.id);
+    });
 });
 
 function startServer() {

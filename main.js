@@ -17,7 +17,8 @@ app.on('ready', () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-            enableRemoteModule: true // remote module 활성화 (필요한 경우)
+            enableRemoteModule: true, // remote module 활성화 (필요한 경우)
+            sandbox: false,
         }
     });
 

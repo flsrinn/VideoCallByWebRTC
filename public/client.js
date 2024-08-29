@@ -18,11 +18,13 @@ let roomId;
 const iceServers = {
     iceServers: [
         {urls: 'stun:stun.l.google.com:19302'}, 
-        {urls: 'stun:stun1.l.google.com:19302'}, 
-        {urls: 'stun:stun2.l.google.com:19302'}, 
-        {urls: 'stun:stun3.l.google.com:19302'}, 
-        {urls: 'stun:stun4.l.google.com:19302'}, 
-    ]
+        {
+            urls: 'turn:223.194.138.218:3478',
+            username: 'arin',
+            credential: '0205'
+        }
+    ],
+    iceTransportPolicy: 'relay' // TURN 서버 사용을 강제
 };
 
 connectButton.addEventListener('click', async () => {
@@ -94,6 +96,24 @@ socket.on('webrtc_ice_candidate', async (data) => {
     });
 });
 
+// 사용자 나가기 처리
+socket.on('client_disconnected', (clientId) => {
+    console.log(`Client ${clientId} disconnected`);
+    
+    // 해당 사용자의 비디오 요소 제거
+    let remoteVideo = document.getElementById(clientId);
+    if (remoteVideo) {
+        remoteVideoComponent.removeChild(remoteVideo);
+        console.log(`Removed video element for ${clientId}`);
+    }
+
+    // 연결된 peer connection도 제거
+    if (peerConnections[clientId]) {
+        peerConnections[clientId].close();
+        delete peerConnections[clientId];
+    }
+});
+
 async function initializeLocalStream() {
     try {
         localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
@@ -151,7 +171,7 @@ async function createPeerConnection(clientId) {
             // 연결 해제 시 비디오 요소를 제거하거나 다른 처리를 할 수 있습니다.
             let remoteVideo = document.getElementById(clientId);
             if (remoteVideo) {
-                videoChatContainer.removeChild(remoteVideo);
+                remoteVideoComponent.removeChild(remoteVideo);
             }
         }
     };
