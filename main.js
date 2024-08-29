@@ -22,7 +22,7 @@ app.on('ready', () => {
         }
     });
 
-    mainWindow.loadURL(`http://localhost:3000`); // 서버에서 제공하는 URL을 로드
+    mainWindow.loadURL(`https://7637-223-194-138-218.ngrok-free.app`); // 서버에서 제공하는 URL을 로드
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
