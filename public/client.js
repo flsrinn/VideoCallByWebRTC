@@ -6,14 +6,11 @@ const videoChatContainer = document.getElementById('video-chat-container');
 const localVideoComponent = document.getElementById('local-video');
 const remoteVideoComponent = document.getElementById('remote-video');
 
-// Ngrok을 통해 생성된 URL로 Socket.IO 연결
-const socket = io('https://a579-223-194-138-218.ngrok-free.app');
-
+const socket = io();
 const mediaConstraints = {
     audio: true,
     video: { width: 1280, height: 720 }
 };
-
 let localStream = null;
 let peerConnections = {};
 let roomId;
@@ -151,6 +148,7 @@ async function createPeerConnection(clientId) {
     peerConnection.oniceconnectionstatechange = () => {
         if (peerConnection.iceConnectionState === 'disconnected') {
             console.log(`PeerConnection with ${clientId} disconnected`);
+            // 연결 해제 시 비디오 요소를 제거하거나 다른 처리를 할 수 있습니다.
             let remoteVideo = document.getElementById(clientId);
             if (remoteVideo) {
                 videoChatContainer.removeChild(remoteVideo);
@@ -167,11 +165,13 @@ async function createPeerConnection(clientId) {
 }
 
 function handleTrack(event, clientId) {
+    // 동일한 MediaStream에 대해 중복 처리를 피하기 위해 스트림 ID를 추적
     const stream = event.streams[0];
     const videoElementId = `${clientId}`;
     let video = document.getElementById(videoElementId);
 
     if (!video) {
+        // 새로운 스트림에 대해 비디오 요소를 생성
         video = document.createElement("video");
         video.id = videoElementId;
         video.className = 'remote-video';
@@ -180,13 +180,14 @@ function handleTrack(event, clientId) {
         video.style.width = '80%';
         video.style.height = '80%';
 
-        console.log(`새로운 영상 ${videoElementId}`);
+        console.log(`새로운 영상 ${videoElementId}`)
         remoteVideoComponent.appendChild(video);
         console.log(`Created new video element for ${clientId} with stream ${stream.id}`);
     } else {
         console.log(`Using existing video element for ${clientId} with stream ${stream.id}`);
     }
 
+    // 스트림을 비디오 요소에 연결
     if (video.srcObject !== stream) {
         video.srcObject = stream;
         console.log(`Video element for ${clientId} is now playing stream ${stream.id}`);

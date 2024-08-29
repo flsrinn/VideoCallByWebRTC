@@ -16,7 +16,8 @@ app.on('ready', () => {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: false,
+            enableRemoteModule: true // remote module 활성화 (필요한 경우)
         }
     });
 
