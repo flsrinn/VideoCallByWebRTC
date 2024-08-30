@@ -9,26 +9,33 @@ body {
 }
 
 #video-chat-container {
-    display: grid; /* 그리드 레이아웃을 사용합니다 */
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 열의 개수와 크기를 자동으로 조절합니다 */
-    gap: 10px; /* 그리드 아이템 간의 간격을 설정합니다 */
+    display: grid;
+    gap: 10px;
     width: 100%;
     height: 80%;
-    justify-items: center; /* 그리드 아이템을 수평 중앙에 배치 */
-    align-items: center; /* 그리드 아이템을 수직 중앙에 배치 */
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 video {
-    width: 100%; /* 그리드 셀에 맞게 비디오 크기를 조정 */
-    height: auto;
+    width: 300px;  
+    height: 200px; 
     border: 1px solid #000;
-    border-radius: 5px; /* 비디오 요소에 둥근 모서리를 추가 (선택 사항) */
+    border-radius: 5px;
 }
 
-#local-video {
-    grid-column: span 2; /* 로컬 비디오를 그리드에서 2칸 차지하게 설정 */
+#end-call-button {
+    width: 100px;
+    height: 100px;
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    position: fixed;
+    bottom: 20px;
 }
 
-.remoteVideo {
-    grid-column: span 1; /* 원격 비디오는 1칸만 차지 */
+#end-call-button img {
+    width: 100%;
+    height: 100%;
 }

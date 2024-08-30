@@ -108,7 +108,12 @@ async function initializeLocalStream() {
 function showVideoConference() {
     roomSelectionContainer.style.display = 'none';
     videoChatContainer.style.display = 'flex';
+
+    // Show the end call button
+    const endCallButton = document.getElementById('end-call-button');
+    endCallButton.style.display = 'block';
 }
+
 
 async function joinRoom(room) {
     if (!room) {
@@ -177,8 +182,6 @@ function handleTrack(event, clientId) {
         video.className = 'remote-video';
         video.autoplay = true;
         video.playsInline = true;
-        video.style.width = '80%';
-        video.style.height = '80%';
 
         console.log(`새로운 영상 ${videoElementId}`)
         remoteVideoComponent.appendChild(video);
