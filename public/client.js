@@ -14,6 +14,7 @@ const mediaConstraints = {
 let localStream = null;
 let peerConnections = {};
 let roomId;
+let userId;
 
 const iceServers = {
     iceServers: [
@@ -33,6 +34,10 @@ connectButton.addEventListener('click', async () => {
         console.error('Error initializing local stream:', error);
         alert('Could not access your camera. Please check your permissions.');
     }
+});
+
+socket.on('connect', () => {
+    userId = socket.id;  // 사용자가 서버에 연결되었을 때 userId를 설정
 });
 
 socket.on('room_created', () => {
@@ -109,9 +114,14 @@ function showVideoConference() {
     roomSelectionContainer.style.display = 'none';
     videoChatContainer.style.display = 'flex';
 
-    // Show the end call button
     const endCallButton = document.getElementById('end-call-button');
     endCallButton.style.display = 'block';
+
+    const inviteButton = document.getElementById('invite-button');
+    inviteButton.style.display = 'block';
+
+    const chatButton = document.getElementById('chat-button');
+    chatButton.style.display = 'block';
 }
 
 
@@ -195,4 +205,86 @@ function handleTrack(event, clientId) {
         video.srcObject = stream;
         console.log(`Video element for ${clientId} is now playing stream ${stream.id}`);
     }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const roomPath = window.location.pathname.split('/');
+    const roomIdFromUrl = roomPath[roomPath.length - 1];
+
+    if (roomIdFromUrl && roomIdFromUrl !== 'room') {
+        roomInput.value = roomIdFromUrl; // URL에서 추출한 방 ID를 입력 필드에 설정
+        connectButton.click(); // 방에 자동으로 연결
+    }
+});
+
+connectButton.addEventListener('click', async () => {
+    try {
+        await initializeLocalStream();
+        joinRoom(roomInput.value);
+    } catch (error) {
+        console.error('Error initializing local stream:', error);
+        alert('Could not access your camera. Please check your permissions.');
+    }
+});
+
+document.getElementById('invite-button').addEventListener('click', () => {
+    const roomId = roomInput.value || roomId; // Use the current room ID
+    if (!roomId) {
+        alert('Please join or create a room first.');
+        return;
+    }
+    const inviteUrl = `${window.location.origin}/room/${roomId}`;
+    navigator.clipboard.writeText(inviteUrl).then(() => {
+        alert('Invite link copied to clipboard: ' + inviteUrl);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+});
+
+document.getElementById('chat-button').addEventListener('click', () => {
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.classList.toggle('show');
+});
+
+document.getElementById('close-chat-button').addEventListener('click', () => {
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.classList.remove('show');
+});
+
+document.getElementById('send-chat-button').addEventListener('click', sendMessage);
+
+document.getElementById('chat-input').addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const messageInput = document.getElementById('chat-input');
+    const message = messageInput.value.trim();
+    if (message !== "") {
+        // Emit the message to the server
+        socket.emit('chat_message', message, );
+
+        // Add the message to the chat window (you send it, so show it)
+        addMessageToChat('You', message);
+
+        // Clear the input field
+        messageInput.value = '';
+    }
+}
+
+socket.on('chat_message', (data) => {
+    if(data.sender !== userId)
+        addMessageToChat(data.sender, data.message);
+});
+
+function addMessageToChat(sender, message) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('chat-message');
+    messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatMessages.appendChild(messageElement);
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }

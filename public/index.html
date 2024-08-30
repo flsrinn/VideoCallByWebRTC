@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebRTC Video Conference</title>
     <link rel="stylesheet" href="./style.css">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
     <div id="room-selection-container">
@@ -16,6 +17,23 @@
         <video id="local-video" autoplay muted></video>
         <div class="remoteVideo" id="remote-video"></div>
     </div>
+    <button id="invite-button" style="display:none;">
+        <img src="./images/add-friend.png" alt="">
+    </button>
+    <button id="chat-button" style="display:none;">
+        <img src="./images/chat.png" alt="">
+    </button>
+
+    <div id="chat-container" class="hidden">
+        <div id="chat-header">
+            <h3>Chat</h3>
+            <button id="close-chat-button">&times;</button>
+        </div>
+        <div id="chat-messages"></div>
+        <input type="text" id="chat-input" placeholder="Type a message...">
+        <button id="send-chat-button">Send</button>
+    </div>
+
     <button id="end-call-button" style="display: none;">
         <img src="./images/call_end.png" alt="End Call">
     </button>

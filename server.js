@@ -1,14 +1,19 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 app.use(cors());
-app.use('/', express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', (socket) => {
-    socket.on('join', (roomId) => {
+    let roomId;  
+
+    socket.on('join', (room) => {
+        roomId = room;  
         const clients = io.sockets.adapter.rooms.get(roomId) || new Set();
 
         if (clients.size >= 4) {
@@ -21,6 +26,16 @@ io.on('connection', (socket) => {
 
         socket.emit('existing_clients', Array.from(clients));
         socket.to(roomId).emit('new_client', socket.id);
+    });
+
+    socket.on('chat_message', (message) => {
+        const senderId = socket.id;
+        if (roomId) {
+            io.in(roomId).emit('chat_message', {
+                sender: senderId,
+                message: message
+            });
+        }
     });
 
     socket.on('webrtc_offer', (data) => {
@@ -44,7 +59,6 @@ io.on('connection', (socket) => {
         });
     });
 
-    // 사용자가 나갔을 때 처리
     socket.on('disconnect', () => {
         console.log(`Client ${socket.id} disconnected`);
         socket.broadcast.emit('client_disconnected', socket.id);
