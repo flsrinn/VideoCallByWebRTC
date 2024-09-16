@@ -5,18 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebRTC Video Conference</title>
     <link rel="stylesheet" href="./style.css">
-    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./webview-style.css" media="(max-width: 480px)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="room-selection-container">
-        <h2>Join a Room</h2>
-        <input type="text" id="room-input" placeholder="Enter room ID">
-        <button id="connect-button">Connect</button>
+    <div id="preparation-container">
+        <video id="preview-video" autoplay muted></video><br>
+        <div id="toggle-buttons">
+            <button id="prep-camera-toggle-button" class="control-button">
+                <img id="prep-cam-img" src="./images/cam-on.png" alt="Camera Toggle">
+            </button>&nbsp;&nbsp;&nbsp;
+            <button id="prep-microphone-toggle-button" class="control-button">
+                <img id="prep-mic-img" src="./images/mic-on.png" alt="Microphone Toggle">
+            </button>
+        </div><br>
+        <input type="text" id="username-input" placeholder="이름을 입력해주세요"> <br>
+        <button id="start-conference-button">입장</button>
     </div>
+    
     <div id="video-chat-container" style="display:none;">
-        <video id="local-video" autoplay muted></video>
+        <div class="local-video-wrapper">
+            <div class="video-wrapper">
+                <video id="local-video" autoplay playsinline muted></video>
+                <div class="video-nickname" id="local-nickname">Your Name</div> <!-- 사용자 닉네임 표시 -->
+            </div>
+        </div>
+    
         <div class="remoteVideo" id="remote-video"></div>
     </div>
+
     <button id="invite-button" style="display:none;">
         <img src="./images/add-friend.png" alt="">
     </button>
@@ -26,17 +45,41 @@
 
     <div id="chat-container" class="hidden">
         <div id="chat-header">
-            <h3>Chat</h3>
-            <button id="close-chat-button">&times;</button>
+            <button id="chat-tab-button"><h3>Chat</h3></button>
+            <button id="ai-tab-button"><h3>AI</h3></button>
+            <button id="close-chat-button">></button>
         </div>
-        <div id="chat-messages"></div>
-        <input type="text" id="chat-input" placeholder="Type a message...">
-        <button id="send-chat-button">Send</button>
-    </div>
 
-    <button id="end-call-button" style="display: none;">
-        <img src="./images/call_end.png" alt="End Call">
-    </button>
+        <div id="chat-messages-container">
+            <div id="chat-messages"></div>
+        </div>
+
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="메세지 입력...">
+            <button id="send-chat-button">전송</button>
+        </div>
+        
+        <div id="ai-analysis-container" style="display:none;">
+            <div id="ai-analysis-header">
+                <h3>AI 분석 결과</h3>
+            </div>
+            <textarea id="ai-transcription-result" readonly placeholder="분석된 텍스트가 없습니다"></textarea>
+        </div>
+    </div>        
+
+    <div id="control-buttons-container" style="display: none;">
+        <button id="camera-toggle-button" class="control-button">
+            <img id="cam-img" src="./images/cam-on.png" alt="Camera Toggle">
+        </button>
+    
+        <button id="microphone-toggle-button" class="control-button">
+            <img id="mic-img" src="./images/mic-on.png" alt="Microphone Toggle">
+        </button>
+    
+        <button id="end-call-button" class="control-button">
+            <img src="./images/call_end.png" alt="End Call">
+        </button>
+    </div>    
     
     <script src="/socket.io/socket.io.js"></script>
     <script src="./client.js"></script>
