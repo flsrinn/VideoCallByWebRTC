@@ -1,9 +1,7 @@
 # VideoCallByWebRTC
-WebRTC를 이용한 화상 통신 
+WebRTC를 이용한 화상 통신 <br><br>
 
-## ✨ 실행 방법
-1. **npm start**로 Express 서버를 통해 server.js 실행
-2. **ngrok http 3000**으로 외부 인터넷 망에서도 localhost:3000으로 접속할 수 있게 함
-3. 방 번호 입력 후 접속
-4. 카메라, 마이크 접근 허용
-5. 다른 컴퓨터로 동일한 방 번호로 접속할 시 화상 통신 시작 
+## ✨ Language & Tools
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)  <br>
+![WebRTC](https://img.shields.io/badge/webrtc-333333.svg?style=for-the-badge&logo=webrtc&logoColor=white) ![Socket.io](https://img.shields.io/badge/socket.io-010101.svg?style=for-the-badge&logo=socket.io&logoColor=white) ![ngrok](https://img.shields.io/badge/ngrok-1F1E37.svg?style=for-the-badge&logo=ngrok&logoColor=white) 
+![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
