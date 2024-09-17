@@ -197,40 +197,40 @@ async function createPeerConnection(clientId) {
 
 function handleTrack(event, clientId) {
     const stream = event.streams[0];
-    const videoElementId = `video-${clientId}`; // Unique ID for video element
-    let videoWrapper = document.getElementById(`video-wrapper-${clientId}`);
+    const videoWrapperId = `video-wrapper-${clientId}`;
+    let videoWrapper = document.getElementById(videoWrapperId);
 
     if (!videoWrapper) {
         const username = clientUsernames[clientId] || 'Anonymous';
 
-        // Create a wrapper for video and nickname
+        // 비디오와 닉네임을 감싸는 wrapper 생성
         videoWrapper = document.createElement("div");
-        videoWrapper.id = `video-wrapper-${clientId}`;
+        videoWrapper.id = videoWrapperId;
         videoWrapper.className = 'video-wrapper';
 
-        // Create video element
+        // 비디오 요소 생성
         const videoElement = document.createElement("video");
-        videoElement.id = videoElementId;
+        videoElement.id = `video-${clientId}`; // 고유한 비디오 ID 사용
         videoElement.srcObject = stream;
         videoElement.autoplay = true;
         videoElement.playsInline = true;
 
-        // Create nickname element
+        // 닉네임 요소 생성
         const nicknameElement = document.createElement('div');
         nicknameElement.className = 'video-nickname';
         nicknameElement.textContent = username;
 
-        // Append video and nickname to the wrapper
+        // 비디오와 닉네임을 wrapper에 추가
         videoWrapper.appendChild(videoElement);
         videoWrapper.appendChild(nicknameElement);
 
-        // Append wrapper to remote video container
+        // wrapper를 비디오 컨테이너에 추가
         remoteVideoComponent.appendChild(videoWrapper);
-    }
-
-    const videoElement = videoWrapper.querySelector('video');
-    if (videoElement.srcObject !== stream) {
-        videoElement.srcObject = stream;
+    } else {
+        const videoElement = videoWrapper.querySelector('video');
+        if (videoElement.srcObject !== stream) {
+            videoElement.srcObject = stream;
+        }
     }
 }
 

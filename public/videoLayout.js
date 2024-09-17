@@ -13,30 +13,20 @@ function removeVideoElement(clientId) {
     }
 }
 
-// Adjust the video layout when videos are added or removed
 function adjustVideoLayout() {
     const videoContainer = document.getElementById('video-chat-container');
     const videos = videoContainer.getElementsByTagName('video');
     const videoCount = videos.length;
 
-    switch(videoCount) {
-        case 1:
-            videoContainer.style.gridTemplateColumns = '1fr';
-            break;
-        case 2:
-            videoContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-            break;
-        case 3:
-            videoContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            break;
-        case 4:
-            videoContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-            videoContainer.style.gridTemplateRows = 'repeat(2, 1fr)';
-            break;
-        default:
-            videoContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
-            videoContainer.style.gridTemplateRows = 'none';
-            break;
+    if (videoCount === 1) {
+        videoContainer.style.gridTemplateColumns = '1fr';
+    } else if (videoCount === 2) {
+        videoContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    } else if (videoCount === 3) {
+        videoContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    } else {
+        videoContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        videoContainer.style.gridTemplateRows = `repeat(${Math.ceil(videoCount / 3)}, 1fr)`;
     }
 }
 
