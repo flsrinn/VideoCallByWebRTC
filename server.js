@@ -13,10 +13,12 @@ const { exec } = require('child_process');
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const users = {};           
-const userSocketMap = {}; 
+const users = {};           // 사용자 ID -> 소켓 ID 매핑
+const usersSocketId = {};
+const userSocketMap = {};   // 사용자 이름 -> 소켓 ID 매핑
 
 io.on('connection', (socket) => {
+    // 클라이언트가 방에 참여할 때 호출
     socket.on('join-room', (user) => {
         const [userId, name, room] = user.split(';');
         const roomId = room;
@@ -25,6 +27,9 @@ io.on('connection', (socket) => {
     
         // 사용자의 소켓 ID와 이름을 저장
         users[socket.id] = { userId, username: name };
+        usersSocketId[userId] = socket.id;
+        socket.roomId = roomId;
+
         socket.join(roomId);
     
         // 기존 클라이언트 정보(이름 포함)를 전송
@@ -123,6 +128,25 @@ io.on('connection', (socket) => {
     // 클라이언트가 연결을 끊을 때 처리
     socket.on('disconnect', () => {
         console.log('클라이언트 연결 종료:', socket.id);
+        
+        // 클라이언트가 방에 있을 경우, 방에서 나가게 처리
+        const roomId = socket.roomId;
+        if (roomId) {
+            socket.to(roomId).emit('client_left', socket.id);
+            socket.leave(roomId);
+        }
+
+        // 연결 종료된 소켓의 사용자 정보를 삭제
+        if (socket.userId && users[socket.userId]) {
+            delete users[socket.userId];
+        }
+
+        // 사용자 이름과 소켓 ID 매핑에서 삭제
+        if (socket.username && userSocketMap[socket.username]) {
+            delete userSocketMap[socket.username];
+        }
+
+        // 클라이언트가 방에 있을 경우, 방에서 나가게 처리
         const rooms = Array.from(socket.rooms);
         rooms.forEach(roomId => {
             socket.to(roomId).emit('client_left', socket.id);

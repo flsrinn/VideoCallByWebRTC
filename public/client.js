@@ -446,13 +446,11 @@ async function leaveRoom() {
 }
 
 socket.on('client_left', (clientId) => {
-    // 다른 클라이언트가 방을 떠날 때 해당 사용자의 비디오 제거
-    const videoElement = document.getElementById(clientId);
-    if (videoElement) {
-        videoElement.remove();
-        console.log(`Removed video element for ${clientId}`);
-    }
+    console.log(`Client ${clientId} left`);
+    removeVideoElement(clientId);
     delete peerConnections[clientId];
+    delete clientUsernames[clientId];
+    adjustVideoLayout();
 });
 
 socket.on('client_left', (clientId) => {

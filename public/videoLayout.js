@@ -1,14 +1,8 @@
-// Listen for the client_disconnected event
-socket.on('client_disconnected', (clientId) => {
-    console.log(`Client ${clientId} disconnected`);
-    removeVideoElement(clientId);
-});
-
-// Function to remove video element and adjust layout
 function removeVideoElement(clientId) {
-    const videoElement = document.getElementById(clientId);
-    if (videoElement) {
-        videoElement.remove();
+    const videoWrapperId = `video-wrapper-${clientId}`;
+    const videoWrapper = document.getElementById(videoWrapperId);
+    if (videoWrapper) {
+        videoWrapper.remove();
         adjustVideoLayout();
     }
 }
